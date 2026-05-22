@@ -1,7 +1,7 @@
-# HarmonyOS 华为分享 API 技术规格
+# HarmonyOS 华为分享 API 技术文档总结
 
 > 文档类型：API规格
-> 适用系统：HarmonyOS NEXT（单框架）
+> 适用系统：HarmonyOS NEXT（单框架）/ EMUI / HarmonyOS 4（双框架）
 > 更新日期：2026-05-18
 
 ---
@@ -10,7 +10,10 @@
 
 ### 功能说明
 
-华为分享（Huawei Share）支持跨设备传输动态照片，媒体库提供静态融合方法，将单框架分离格式转换为双框架嵌入格式，确保跨端兼容性。
+华为分享是华为设备的跨设备传输功能，支持：
+- 近场传输（蓝牙 + Wi-Fi Direct）
+- 远场传输（云端中转）
+- 动态照片跨端兼容
 
 ### 跨端场景
 
@@ -20,11 +23,18 @@
 | 双→单分享 | 接收方 | 发送方 | 媒体库拆分存储 |
 | 单→单分享 | 发送方 | 接收方 | 保持分离格式 |
 
+### 动态照片格式差异
+
+| 系统类型 | 存储格式 | 分享格式 |
+|---------|---------|---------|
+| **单框架** (HarmonyOS NEXT) | 分离格式：JPG + MP4 + extraData | 融合为嵌入格式后分享 |
+| **双框架** (EMUI/HarmonyOS 4) | 嵌入格式：单一JPG（含视频） | 直接分享单一JPG |
+
 ---
 
-## 2. ShareKit API
+## 2. 单框架 API (HarmonyOS NEXT)
 
-### 系统分享面板
+### 2.1 ShareKit API
 
 **模块**：`@kit.ShareKit`
 **核心类**：`systemShare.ShareController`, `systemShare.SharedData`
@@ -51,7 +61,7 @@ await controller.show(context, {
 });
 ```
 
-### 批量分享
+### 2.2 批量分享
 
 ```typescript
 // 多文件分享
@@ -65,20 +75,9 @@ shareData.addRecord({
 });
 ```
 
-### 第三方应用
+### 2.3 媒体库融合方法
 
-系统分享面板会列出所有支持分享的应用：
-- 华为分享（HiShare）
-- 微信、QQ
-- 蓝牙、邮件等
-
-**限制**：无法直接跳转特定应用，需用户选择
-
----
-
-## 3. 媒体库融合方法
-
-### URI格式
+#### URI格式
 
 ```
 公共目录媒体类URI格式：file://media/<mediaType>/IMG_DATATIME_ID/<displayName>
@@ -124,11 +123,9 @@ function fuseMovingPhoto(
    └── 自动拆分为JPG + MP4 + extraData存储
 ```
 
----
+#### 单框架来源融合（无extraData）
 
-## 4. 单框架来源融合（无extraData）
-
-### 构造简单元数据
+**构造简单元数据**
 
 ```python
 def convert_movingphoto_to_livephoto_single_source(image_path, video_path):
@@ -158,11 +155,9 @@ def convert_movingphoto_to_livephoto_single_source(image_path, video_path):
     return combined_data
 ```
 
----
+#### 双框架来源融合（有extraData）
 
-## 5. 双框架来源融合（有extraData）
-
-### 从extraData读取元数据
+**从extraData读取元数据**
 
 ```python
 def convert_movingphoto_to_livephoto_dual_source(image_path, video_path, extra_data_path):
@@ -195,11 +190,7 @@ def convert_movingphoto_to_livephoto_dual_source(image_path, video_path, extra_d
     return combined_data
 ```
 
----
-
-## 6. 缓存文件位置
-
-### 分享缓存目录
+### 2.4 缓存文件位置
 
 ```
 分享时生成的缓存文件位置：
@@ -207,6 +198,104 @@ def convert_movingphoto_to_livephoto_dual_source(image_path, video_path, extra_d
 
 用途：华为分享发送融合后的双框架格式文件
 ```
+---
+
+## 3. 双框架 API (EMUI / HarmonyOS 4)
+
+### 3.1 Android 分享 API
+
+#### Intent 分享
+
+```java
+Intent shareIntent = new Intent(Intent.ACTION_SEND);
+shareIntent.setType("image/jpeg");
+shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(filePath));
+Intent chooser = Intent.createChooser(shareIntent, "分享动态照片");
+context.startActivity(chooser);
+```
+
+#### 多文件分享
+
+```java
+Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+shareIntent.setType("image/jpeg");
+ArrayList<Uri> uris = new ArrayList<>();
+uris.add(Uri.parse(file1Path));
+uris.add(Uri.parse(file2Path));
+shareIntent.putExtra(Intent.EXTRA_STREAM, uris);
+context.startActivity(Intent.createChooser(shareIntent, "分享多张照片"));
+```
+
+### 3.2 HiShare SDK（可选）
+
+```java
+import com.huawei.hishare.HiShare;
+import com.huawei.hishare.HiShareConfig;
+
+HiShareConfig config = new HiShareConfig.Builder()
+    .setAppId("your_app_id")
+    .build();
+HiShare.getInstance().init(context, config);
+
+HiShare.getInstance().shareFile(context, filePath, new HiShare.Callback() {
+    @Override
+    public void onSuccess(ShareResult result) {}
+    @Override
+    public void onFailure(int errorCode, String errorMsg) {}
+});
+```
+
+### 3.3 分享权限
+
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+<provider
+    android:name="android.support.v4.content.FileProvider"
+    android:authorities="com.example.app.fileprovider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
+```
+
+---
+
+## 4. 跨端兼容性
+
+### 4.1 跨品牌分享兼容性
+
+| 目标设备 | 动态照片体验 | 说明 |
+|---------|------------|-----|
+| 华为设备（双框架） | 全功能 | 直接播放 |
+| 华为设备（单框架） | 全功能 | 自动拆分存储 |
+| 其他品牌设备 | 仅静态图 | 无法识别嵌入视频 |
+
+### 4.2 格式兼容性矩阵
+
+| 原始格式 | 华为双框架 | 华为单框架 | 其他品牌 |
+|---------|-----------|-----------|---------|
+| 华为嵌入格式 | 全功能 | 全功能 | 仅静态 |
+| 华为分离格式 | 仅静态 | 全功能 | 仅静态 |
+| Apple Live Photo | 仅静态 | 仅静态 | 仅静态（iOS除外） |
+| Google Motion Photo | 仅静态 | 仅静态 | 有限 |
+
+### 4.3 跨端处理流程总览
+
+**单框架发送 → 双框架接收**：
+- 单框架：媒体库融合分离格式为嵌入格式 → 发送单一JPG
+- 双框架：接收单一JPG → 直接播放
+
+**双框架发送 → 单框架接收**：
+- 双框架：直接发送单一JPG（含嵌入视频）
+- 单框架：接收 → 媒体库拆分为分离格式存储
+
+**单框架发送 → 单框架接收**：
+- 单框架发送：融合为嵌入格式发送
+- 单框架接收：拆分为分离格式存储
 
 ---
 
@@ -291,5 +380,8 @@ await controller.show(context, {
 
 ## 参考资料
 
-### 华为官方文档
+### 官方文档
 - HarmonyOS ShareKit: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/share-utd-link
+- Android Intent.ACTION_SEND: https://developer.android.com/reference/android/content/Intent#ACTION_SEND
+- Android FileProvider: https://developer.android.com/reference/android/support/v4/content/FileProvider
+- HMS Core HiShare: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/hishare-guidelines
