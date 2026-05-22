@@ -1,8 +1,16 @@
 # EMUI 动态照片格式分析
 
-> 文档类型：格式规格
-> 适用系统：EMUI / HarmonyOS 4（双框架）
-> 更新日期：2026-05-19
+> **文档类型**：格式规格（简版）
+> **适用系统**：EMUI / HarmonyOS 4（双框架）
+> **更新日期**：2026-05-21
+
+---
+
+## 说明
+
+**本文档为EMUI双框架格式快速参考，完整规格请查阅：**
+- **主文档**：`006-harmonyos-dual-single-framework-compatibility.md`（第2章：双框架嵌入文件模式）
+- **Cinemagraph详情**：`005-harmonyos-cinemagraph.md`
 
 ---
 

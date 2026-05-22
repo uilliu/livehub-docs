@@ -682,7 +682,7 @@ await notificationManager.publish(notificationRequest);
 
 ### 开源项目与工具参考
 - ExifTool: https://exiftool.org/ (支持华为MakerNotes、小米XMP)
-- **开源工具汇总**: [详细参考](019-motion-photo-opensource-kits)
+- **开源工具汇总**: [详细参考](016-opensource-tools-and-sdk.md)
 - LimitPoint/LivePhoto (Swift): Apple Live Photo 创建/提取工具
 - GoMoPho (Go): Google Motion Photo 视频提取器
 - MotionPhotoMuxer (Python): Apple ↔ Google 双向转换

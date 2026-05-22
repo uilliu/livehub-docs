@@ -1,8 +1,16 @@
 # HarmonyOS 动态照片格式分析
 
-> 文档类型：格式规格
-> 适用系统：HarmonyOS NEXT（单框架）
-> 更新日期：2026-05-19
+> **文档类型**：格式规格（简版）
+> **适用系统**：HarmonyOS NEXT（单框架）
+> **更新日期**：2026-05-21
+
+---
+
+## 说明
+
+**本文档为HarmonyOS单框架格式快速参考，完整规格请查阅：**
+- **主文档**：`006-harmonyos-dual-single-framework-compatibility.md`（第3章：单框架分离文件模式）
+- **API详情**：`013-harmonyos-movingphoto-api.md`
 
 ---
 
