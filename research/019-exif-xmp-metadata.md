@@ -410,3 +410,6 @@ exiftool "-GCamera:MotionPhotoOffset=$offset" output.jpg
 | 029 | 华为Apple兼容性 | ContentIdentifier机制 |
 
 ---
+
+*元数据结构指南 v1.0*
+*2026-05-21*

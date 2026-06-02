@@ -490,3 +490,7 @@ def convert_xiaomi_to_huawei_single(xiaomi_file_path):
 2. 实测华为/小米相册对对方格式的识别情况
 3. 实现格式检测和转换逻辑
 4. 测试跨平台转换效果
+
+---
+
+*来源： 小米格式验证方案 + ExifTool官方文档*

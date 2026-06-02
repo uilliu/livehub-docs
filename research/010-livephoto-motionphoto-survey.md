@@ -1,6 +1,7 @@
 # 动态照片/实况照片调研综述
 
-> 核心原理、文件结构、检测方法、转换可行性
+> 调研日期：2026-05-16
+> 调研深度：中等（核心原理、文件结构、检测方法、转换可行性）
 
 ---
 
@@ -682,7 +683,7 @@ await notificationManager.publish(notificationRequest);
 
 ### 开源项目与工具参考
 - ExifTool: https://exiftool.org/ (支持华为MakerNotes、小米XMP)
-- **开源工具汇总**: [详细参考](016-opensource-tools-and-sdk.md)
+- **开源工具汇总**: [详细参考](016-motion-photo-opensource-kits)
 - LimitPoint/LivePhoto (Swift): Apple Live Photo 创建/提取工具
 - GoMoPho (Go): Google Motion Photo 视频提取器
 - MotionPhotoMuxer (Python): Apple ↔ Google 双向转换

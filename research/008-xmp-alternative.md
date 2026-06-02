@@ -219,10 +219,8 @@ target_link_libraries(entry PUBLIC
 **集成步骤**：
 
 1. **下载XMP Toolkit SDK**
-   ```bash
-   git clone https://github.com/adobe/XMP-Toolkit-SDK.git
-   # 复制到项目 third_party/xmp-toolkit 目录
-   ```
+   - 从Adobe官方仓库获取：`github.com/adobe/XMP-Toolkit-SDK`
+   - 复制到项目 `third_party/xmp-toolkit` 目录
 
 2. **适配HarmonyOS编译**
    - 修改XMP Toolkit的构建配置适配OHOS工具链
